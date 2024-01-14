@@ -2,14 +2,20 @@ version: "3.8"
 services:
   tapo_exporter:
     hostname: tapo_exporter
+    container_name: tapo_exporter
     build: .
     restart: always
-    volumes:
+    volumes: # Comment on production, DEV purpose
       - ./main.py:/usr/src/app/main.py
+      - ./logging.conf:/usr/src/app/logging.conf
+      - ./tapo.json:/usr/src/app/tapo.json
     environment:
       - TZ=Europe/Madrid
-    env_file:
-      - .env
+      - TAPO_USER=correo@mail.com
+      - TAPO_PASS=password
+      - PROMETHEUS_MULTIPROC_DIR=/tmp
+    networks:
+      net_monitoring:
     ports:
       - 9120:8000
 networks:
