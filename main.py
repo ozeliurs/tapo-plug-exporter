@@ -41,14 +41,21 @@ async def get_metrics(devices):
         for ip in devices[product]:
 
             client = ApiClient(TAPO_USER, TAPO_PASS)
-            device = await client.p115(ip)  
+            device = None
+
+            if product == "p115":
+                device = await client.p115(ip)  
+            if product == "p100":
+                device = await client.p100(ip)  
+            if product == "l530":
+                device = await client.l530(ip)  
 
             device_info = await device.get_device_info()
 
-            power_usage = 0
-            time_used_today = 0
-            power_saved_today = 0
-            power_usage_today = 0
+            power_usage = None
+            time_used_today = None
+            power_saved_today = None
+            power_usage_today = None
             
             if product in ["p115"]:
                 device_usage = await device.get_device_usage()
@@ -64,6 +71,7 @@ async def get_metrics(devices):
                 power_usage_today = device_usage.to_dict()['power_usage']['today']
         
             device_info_dict = device_info.to_dict()
+            # print(device_info_dict)
             firmware_version = device_info_dict['fw_ver']
             ip = device_info_dict['ip'] 
             mac = device_info_dict['mac'] 
@@ -115,16 +123,7 @@ def apply_metrics():
         f = open('./data.json')
         data = json.load(f)
         for device in data:
-            print(device['ip'],device['on'],device["mac"],device["model"],device["name"],device["type"],device["ssid"])
-
-            power_current.labels(
-                ip=device['ip'], 
-                mac=device["mac"], 
-                model=device["model"], 
-                name=device["name"], 
-                type=device["type"], 
-                ssid=device["ssid"]
-            ).set(device['power'])
+            # print(device['power'], device['ip'],device['on'],device["mac"],device["model"],device["name"],device["type"],device["ssid"])
 
             power_status.labels(
                 ip=device['ip'], 
@@ -135,32 +134,45 @@ def apply_metrics():
                 ssid=device["ssid"]
             ).set(device['on'])
 
-            power_usage_today.labels(
-                ip=device['ip'], 
-                mac=device["mac"], 
-                model=device["model"], 
-                name=device["name"], 
-                type=device["type"], 
-                ssid=device["ssid"]
-            ).set(device['power_usage_today'])
+            if not device['power'] is None:
+                power_current.labels(
+                    ip=device['ip'], 
+                    mac=device["mac"], 
+                    model=device["model"], 
+                    name=device["name"], 
+                    type=device["type"], 
+                    ssid=device["ssid"]
+                ).set(device['power'])
 
-            power_saved_today.labels(
-                ip=device['ip'], 
-                mac=device["mac"], 
-                model=device["model"], 
-                name=device["name"], 
-                type=device["type"], 
-                ssid=device["ssid"]
-            ).set(device['power_saved_today'])
+            if not device['power_usage_today'] is None:
+                power_usage_today.labels(
+                    ip=device['ip'], 
+                    mac=device["mac"], 
+                    model=device["model"], 
+                    name=device["name"], 
+                    type=device["type"], 
+                    ssid=device["ssid"]
+                ).set(device['power_usage_today'])
 
-            time_used.labels(
-                ip=device['ip'], 
-                mac=device["mac"], 
-                model=device["model"], 
-                name=device["name"], 
-                type=device["type"], 
-                ssid=device["ssid"]
-            ).set(device['time_used_today'])
+            if not device['power_saved_today'] is None:
+                power_saved_today.labels(
+                    ip=device['ip'], 
+                    mac=device["mac"], 
+                    model=device["model"], 
+                    name=device["name"], 
+                    type=device["type"], 
+                    ssid=device["ssid"]
+                ).set(device['power_saved_today'])
+
+            if not device['time_used_today'] is None:
+                time_used.labels(
+                    ip=device['ip'], 
+                    mac=device["mac"], 
+                    model=device["model"], 
+                    name=device["name"], 
+                    type=device["type"], 
+                    ssid=device["ssid"]
+                ).set(device['time_used_today'])
 
 if __name__ == "__main__":
 
