@@ -8,16 +8,22 @@ import os
 import random
 import time
 
-power_usage_today = Gauge('tapo_power_usage_today', 'Power usage used today')
-power_saved_today = Gauge('tapo_power_saved_today', 'Power usage used today')
-time_used = Gauge('tapo_time_used_today', 'Power usage used today')
+power_usage_today = Gauge(name='tapo_power_usage_today', documentation='Power usage used today', labelnames=['ip'] )
+power_saved_today = Gauge(name='tapo_power_saved_today', documentation='Power usage used today', labelnames=['ip'] )
+time_used = Gauge(name='tapo_time_used_today', documentation='Power usage used today', labelnames=['ip'] )
 
-async def set_power_usage_today(client, device):
+async def set_device_info(client, device):
     device = await client.p115(device)
     device_info = await device.get_device_usage()
-    power_usage_today.set(device_info.to_dict()['power_usage']['today'])
-    power_saved_today.set(device_info.to_dict()['saved_power']['today'])
-    time_used.set(device_info.to_dict()['time_usage']['today'])
+    return
+
+async def set_power_usage_today(client, device):
+    ip = device
+    device = await client.p115(device)
+    device_info = await device.get_device_usage()
+    power_usage_today.labels(ip=ip).set(device_info.to_dict()['power_usage']['today'])
+    power_saved_today.labels(ip=ip).set(device_info.to_dict()['saved_power']['today'])
+    time_used.labels(ip=ip).set(device_info.to_dict()['time_usage']['today'])
 
 def tapo_fetcher(ip):
 
@@ -51,4 +57,4 @@ async def generate_metrics(request: Request, call_next):
     return response
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

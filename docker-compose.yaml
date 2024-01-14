@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  tapo_exporter:
+    hostname: tapo_exporter
+    build: .
+    restart: always
+    volumes:
+      - ./main.py:/usr/src/app/main.py
+    environment:
+      - TZ=Europe/Madrid
+    env_file:
+      - .env
+    ports:
+      - 9120:8000
+networks:
+  net_monitoring:
+    external: true
