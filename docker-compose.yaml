@@ -4,6 +4,7 @@ services:
     hostname: tapo_exporter
     container_name: tapo_exporter
     build: .
+    # image: yuki/tapo-exporter:latest
     restart: always
     volumes: # Comment on production, DEV purpose
       - ./main.py:/usr/src/app/main.py
