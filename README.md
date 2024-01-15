@@ -14,6 +14,7 @@ Configure: tapo.json
 }
 ```
 
+Run docker compose:
 ```bash
 docker compose build --no-cache && docker compose up -d
 ```
