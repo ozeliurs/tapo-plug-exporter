@@ -1,8 +1,8 @@
 # Start service by
 
 Modify: docker-compose.yaml
-    + TAPO_USER
-    + TAPO_PASS
++ TAPO_USER
++ TAPO_PASS
 
 Configure: tapo.json
 
