@@ -3,7 +3,7 @@ services:
   tapo_exporter:
     hostname: tapo_exporter
     container_name: tapo_exporter
-    build: .
+    image: ghcr.io/yukics/tapo-plug-exporter:latest
     # image: yuki/tapo-exporter:latest
     restart: always
     volumes: # Comment on production, DEV purpose
