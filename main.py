@@ -47,7 +47,9 @@ async def get_metrics(devices):
             if product == "p115":
                 device = await client.p115(ip)  
             if product == "p100":
-                device = await client.p100(ip)  
+                device = await client.p100(ip)
+            if product == "p110":
+                device = await client.p110(ip)
             if product == "l530":
                 device = await client.l530(ip)
 
