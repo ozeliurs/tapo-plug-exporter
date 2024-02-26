@@ -17,6 +17,7 @@ from prometheus_client import start_http_server, REGISTRY, CollectorRegistry, mu
 
 # logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 labels = ["ip", "mac", "model", "name", "type", "ssid"]
 power_status = Gauge('tapo_power_status', 'Power status on/off', labels)
@@ -48,9 +49,13 @@ async def get_metrics(devices):
             if product == "p100":
                 device = await client.p100(ip)  
             if product == "l530":
-                device = await client.l530(ip)  
+                device = await client.l530(ip)
+
+            logger.info(f"Getting device info for {ip}")
 
             device_info = await device.get_device_info()
+
+            logger.info(f"Received device info for {ip}: {device_info}")
 
             power_usage = None
             time_used_today = None
